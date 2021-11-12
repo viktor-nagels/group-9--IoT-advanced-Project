@@ -1,1 +1,1 @@
-Team 9 - Michiel Janssens, Viktor Nagels, Bent , Emil dudayev, 
+Team 9 - Michiel Janssens, Viktor Nagels, Bent Melis, Emil dudayev, Vincent Somers
