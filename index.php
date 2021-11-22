@@ -37,7 +37,7 @@
     <svg width="150" height="360">
         <rect id="parking1" x="0" y="0" width="150" height="360" style="fill:
 		<?php
-            if($bezet[0] == 1){
+            if($bezet[0] == 0){
                 echo $groen;
             }
             else{
@@ -49,7 +49,7 @@
 	<svg width="150" height="360">
         <rect id="parking1" x="0" y="0" width="150" height="360" style="fill:
 		<?php
-            if($bezet[1] == 1){
+            if($bezet[1] == 0){
                 echo $groen;
             }
             else{
@@ -61,7 +61,7 @@
 	<svg width="150" height="360">
         <rect id="parking1" x="0" y="0" width="150" height="360" style="fill:
 		<?php
-            if($bezet[2] == 1){
+            if($bezet[2] == 0){
                 echo $groen;
             }
             else{
@@ -73,7 +73,7 @@
 	<svg width="150" height="360">
         <rect id="parking1" x="0" y="0" width="150" height="360" style="fill:
 		<?php
-            if($bezet[3] == 1){
+            if($bezet[3] == 0){
                 echo $groen;
             }
             else{
@@ -82,8 +82,12 @@
         ?>
 		;stroke:black;stroke-width:5;" />
     </svg>
+	<div> Aantal vrije plaatsen: <span style="font-weight:bold">
 	<?php
 	header("refresh: 3");
-	?>
+	$counts = array_count_values($bezet);
+	echo  $counts['0'] 
+	?></span>
+	</div>
 </body>
 </html>
