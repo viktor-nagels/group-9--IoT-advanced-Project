@@ -12,7 +12,7 @@
 	$hostname = "localhost";
 	$username = "pi";
 	$password = "raspberry";
-	$db = "ParkingDB";
+	$db = "IoT-Advanced-Project";
 
 	$dbconnect=mysqli_connect($hostname,$username,$password,$db);
 
@@ -22,11 +22,12 @@
 	?>
 	<?php
 
-	$query = mysqli_query($dbconnect, "SELECT bezet FROM `ParkingLot`")
+	$query = mysqli_query($dbconnect, "SELECT StatusParkingLot FROM `parkingLots`")
 		or die (mysqli_error($dbconnect));
 	while ($row = mysqli_fetch_array($query)) {
-		$bezet[] = $row[0];
+		$StatusParkingLot[] = $row[0];   
 	}
+    
 	$rood = '#E16950';
 	$groen = '#91F160';
 	?>
@@ -37,7 +38,20 @@
     <svg width="150" height="360">
         <rect id="parking1" x="0" y="0" width="150" height="360" style="fill:
 		<?php
-            if($bezet[0] == 0){
+            if($StatusParkingLot[0] == 0){
+                echo $groen;
+            }
+            else{
+                echo $rood;
+            }
+        ?>
+		;stroke:black;stroke-width:5;" />
+
+    </svg>    
+	<svg width="150" height="360">
+        <rect id="parking1" x="0" y="0" width="150" height="360" style="fill:
+		<?php
+            if($StatusParkingLot[1] == 0){
                 echo $groen;
             }
             else{
@@ -49,7 +63,7 @@
 	<svg width="150" height="360">
         <rect id="parking1" x="0" y="0" width="150" height="360" style="fill:
 		<?php
-            if($bezet[1] == 0){
+            if($StatusParkingLot[2] == 0){
                 echo $groen;
             }
             else{
@@ -61,19 +75,7 @@
 	<svg width="150" height="360">
         <rect id="parking1" x="0" y="0" width="150" height="360" style="fill:
 		<?php
-            if($bezet[2] == 0){
-                echo $groen;
-            }
-            else{
-                echo $rood;
-            }
-        ?>
-		;stroke:black;stroke-width:5;" />
-    </svg>    
-	<svg width="150" height="360">
-        <rect id="parking1" x="0" y="0" width="150" height="360" style="fill:
-		<?php
-            if($bezet[3] == 0){
+            if($StatusParkingLot[3] == 0){
                 echo $groen;
             }
             else{
@@ -85,7 +87,7 @@
 	<div> Aantal vrije plaatsen: <span style="font-weight:bold">
 	<?php
 	header("refresh: 3");
-	$counts = array_count_values($bezet);
+	$counts = array_count_values($StatusParkingLot);
 	echo  $counts['0'] 
 	?></span>
 	</div>

@@ -1,0 +1,8 @@
+TODO
+-Webserver koppelen aan parkeerslots
+-lcd's toevoegen
+-button toevoegen bareel
+-image error fixsen
+-code opkuisen
+-documentatie schrijven
+
