@@ -58,3 +58,36 @@ def numberplate():
     return numberplate
 
 
+while True:
+    GPIO.output(20,1)
+    time.sleep(0.00001)
+    GPIO.output(20,0)
+    
+    while(GPIO.input(21)==0):
+        pass
+    signaalhigh = time.time()
+
+    while(GPIO.input(21)==1):
+        pass
+
+    signaallow = time.time()
+    timepassed = signaallow - signaalhigh
+    distance = timepassed * 17000
+  
+    if distance <= 30 :    #in centimeter
+        photo()
+        print('AUTO aan de bareel')
+        for n in range(0, 130):
+                stepdrive(23,24,25,26)
+        time.sleep(30)   # moet nog veranderd worden naar als de auto weg is
+        
+        for n in range(0, 130):
+                stepdrive(26,25,24,23)
+        
+    else:
+        GPIO.output(23, 0)
+        GPIO.output(24, 0)
+        GPIO.output(25, 0)
+        GPIO.output(26, 0)
+        print('GEEN auto aan de bareel')
+        time.sleep(0.5)
