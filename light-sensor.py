@@ -19,7 +19,17 @@ def readadc(adcnum):
 
 
 while True:
-    lightsensor = readadc(0)  # read channel 0
+      # read channel 0
+    lightsensor1 = readadc(0)
+    lightsensor2 = readadc(1)
+    lightsensor3 = readadc(2)
+    lightsensor4 = readadc(3)
 
-    print "lichgehalte:", lightsensor
-    time.sleep(0.2)
+    print("lichgehalte1:", lightsensor1)
+    print("lichgehalte2:", lightsensor2)
+    print("lichgehalte3:", lightsensor3)
+    print("lichgehalte4:", lightsensor4)
+    print("-----------------------------")
+    time.sleep(0.7)
+    
+        
