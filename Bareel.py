@@ -1,11 +1,12 @@
 import RPi.GPIO as GPIO
 import time
 
+pinsoon1 = 20
+pinsoon2 = 21
+
 GPIO.setmode(GPIO.BCM)
-GPIO.setup(17, GPIO.OUT)
-GPIO.setup(18, GPIO.IN)
-
-
+GPIO.setup(pinsoon1, GPIO.OUT)
+GPIO.setup(pinsoon2, GPIO.IN)
 
 def stepdrive(pin1,pin2,pin3,pin4):  
     pinnumbers = pin1,pin2,pin3,pin4
@@ -33,15 +34,15 @@ def stepdrive(pin1,pin2,pin3,pin4):
     time.sleep(0.01)
 
 while True:
-    GPIO.output(17,1)
+    GPIO.output(pinsoon1,1)
     time.sleep(0.00001)
-    GPIO.output(17,0)
+    GPIO.output(pinsoon1,0)
     
-    while(GPIO.input(18)==0):
+    while(GPIO.input(pinsoon2)==0):
         pass
     signaalhigh = time.time()
 
-    while(GPIO.input(18)==1):
+    while(GPIO.input(pinsoon2)==1):
         pass
 
     signaallow = time.time()

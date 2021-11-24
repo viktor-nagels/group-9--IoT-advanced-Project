@@ -5,12 +5,12 @@ from pprint import pprint
 import RPi.GPIO as GPIO
 import time
 
+pinsoon1 = 20
+pinsoon2 = 21
 
 GPIO.setmode(GPIO.BCM)
-GPIO.setup(17, GPIO.OUT)
-GPIO.setup(18, GPIO.IN)
-
-
+GPIO.setup(pinsoon1, GPIO.OUT)
+GPIO.setup(pinsoon2, GPIO.IN)
 
 def stepdrive(pin1,pin2,pin3,pin4):  
     pinnumbers = pin1,pin2,pin3,pin4
@@ -36,7 +36,6 @@ def stepdrive(pin1,pin2,pin3,pin4):
     GPIO.output(pin3, 0)
     GPIO.output(pin4, 1)
     time.sleep(0.01)
-
 
 def photo():
     camera = PiCamera() # TODO deze rotatie kan nog aangepast worden A.D.H.V. hoe de camera geposisioneert staat
