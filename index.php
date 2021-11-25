@@ -88,7 +88,11 @@
 	<?php
 	header("refresh: 3");
 	$counts = array_count_values($StatusParkingLot);
-	echo  $counts['0'] 
+    if($counts['0'] == 0){
+        echo '0';
+    } else{
+	    echo  $counts['0'];
+    }
 	?></span>
 	</div>
 </body>
