@@ -1,17 +1,22 @@
 from picamera import PiCamera
 from time import sleep
 import requests
-from pprint import pprint
+from pprint import pprint #? nakijken nog nodig
 import RPi.GPIO as GPIO
 import time
 
-pinsoon1 = 20
-pinsoon2 = 21
+ultrasonic1 = 20
+ultrasonic2 = 21
+button = 12
+step1 = 6
+step2 = 13
+step3 = 19
+step4 = 26
 
 GPIO.setmode(GPIO.BCM)
-GPIO.setup(pinsoon1, GPIO.OUT)
-GPIO.setup(pinsoon2, GPIO.IN)
-GPIO.setup((6,13,19,26), GPIO.OUT)
+GPIO.setup(ultrasonic2,button, GPIO.IN)
+GPIO.setup((ultrasonic1,step1,step2,step3,step4), GPIO.OUT)
+
 
 def stepdrive(pin1,pin2,pin3,pin4):  
     pinnumbers = pin1,pin2,pin3,pin4
@@ -61,22 +66,34 @@ def numberplate():
         numberplate = (json_results['results'][0]['plate'])
     return numberplate
 
-
-while True:
-    GPIO.output(20,1)
-    time.sleep(0.00001)
-    GPIO.output(20,0)
+def stepmotor():
+    for n in range(0, 130):
+            stepdrive(step1,step2,step3,step4)
+    time.sleep(10)   #TODO moet nog veranderd worden naar als de auto weg is
     
-    while(GPIO.input(21)==0):
+    for n in range(0, 130):
+            stepdrive(step4,step3,step2,step1)
+
+def ultrasonic():
+    GPIO.output(ultrasonic1,1)
+    time.sleep(0.00001)
+    GPIO.output(ultrasonic1,0)
+    
+    while(GPIO.input(ultrasonic2)==0):
         pass
     signaalhigh = time.time()
 
-    while(GPIO.input(21)==1):
+    while(GPIO.input(ultrasonic2)==1):
         pass
 
     signaallow = time.time()
     timepassed = signaallow - signaalhigh
     distance = timepassed * 17000
+    return distance
+
+while True:
+    distance = ultrasonic()
+    print(distance)
   
     if distance <= 30 :    #in centimeter
         photo()
@@ -84,21 +101,33 @@ while True:
         numberplate()
         numberplate = numberplate()
         print(numberplate)
-        if numberplate != "FALSE": #TODO zoeken hoe we foute nummerplaat kunnen herkennen
-            
-            for n in range(0, 130):
-                    stepdrive(6,13,19,26)
-            time.sleep(5)   # moet nog veranderd worden naar als de auto weg is
-            
-            for n in range(0, 130):
-                    stepdrive(26,19,13,6)
+        if numberplate != "FALSE":
+            print(numberplate)
+            print("Car can access parking") 
+            stepmotor()
+
         else:
             print("There was no numberplate found")
         
     else:
-        GPIO.output(6, 0)
-        GPIO.output(13, 0)
-        GPIO.output(19, 0)
-        GPIO.output(26, 0)
+        #! 111 - 114: Zijn deze verplicht?
+        GPIO.output(step1, 0)
+        GPIO.output(step2, 0)
+        GPIO.output(step3, 0)
+        GPIO.output(step4, 0)
         print('GEEN auto aan de bareel')
         time.sleep(0.5)
+    
+    #? Code for exiting the parking 
+    if GPIO.input(button) == GPIO.HIGH:
+        print("Button was pushed!")
+        photo()
+        time.sleep(3)
+        numberplate()
+        if numberplate == "FALSE":
+            print("car can exit parking")
+            stepmotor()
+        else:
+            print("Someone is tryint to bypass the system!!!")
+
+        
