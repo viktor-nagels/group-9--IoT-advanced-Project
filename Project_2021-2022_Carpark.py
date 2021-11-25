@@ -54,9 +54,12 @@ def numberplate():
             data=dict(regions=regions),  # Optional
             files=dict(upload=fp),
             headers={'Authorization': 'Token 315a9c42be797329049bf2cc52a5cb41ab960e15'})
-    json_results = (response.json())
-    plate = (json_results['results'][0]['plate'])
-    return plate
+    json_results = (response.json())  
+    if (response.json()['results'] == []):
+        numberplate = "FALSE"
+    else:
+        numberplate = (json_results['results'][0]['plate'])
+    return numberplate
 
 
 while True:
@@ -81,14 +84,16 @@ while True:
         numberplate()
         numberplate = numberplate()
         print(numberplate)
-        if numberplate is str: #TODO zoeken hoe we foute nummerplaat kunnen herkennen
-            print('AUTO aan de bareel')
+        if numberplate != "FALSE": #TODO zoeken hoe we foute nummerplaat kunnen herkennen
+            
             for n in range(0, 130):
                     stepdrive(6,13,19,26)
             time.sleep(5)   # moet nog veranderd worden naar als de auto weg is
             
             for n in range(0, 130):
                     stepdrive(26,19,13,6)
+        else:
+            print("There was no numberplate found")
         
     else:
         GPIO.output(6, 0)
