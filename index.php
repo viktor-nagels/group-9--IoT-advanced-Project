@@ -86,7 +86,8 @@
 	?></span>
 	</div>
 	<?php
-	if($counts['0'] == 0){
+	$counts = array_count_values($bezet);
+	if ($counts['0'] == 0){
 		curl_setopt_array($ch = curl_init(), array(
 		CURLOPT_URL => "https://api.pushover.net/1/messages.json",
 		CURLOPT_POSTFIELDS => array(
@@ -99,7 +100,52 @@
 		));
 		curl_exec($ch);
 		curl_close($ch);
+		
+		$servername = "localhost";
+		$username = "pi";
+		$password = "raspberry";
+		$dbname = "ParkingDB";
+
+		// Create connection
+		$conn = new mysqli($servername, $username, $password, $dbname);
+		// Check connection
+		if ($conn->connect_error) {
+			die("Connection failed: " . $conn->connect_error);
+		}
+
+		$sql = "UPDATE ParkingLot SET bezet=0 WHERE id=5";
+
+		if ($conn->query($sql) === TRUE) {
+			echo "";
+		} 
+		else {
+			echo "";
+		}
+	}	
+	if ($bezet['0'] == 0 or $bezet['1'] == 0 or $bezet['2'] == 0 or $bezet['3'] == 0 and $bezet[4] == 0){
+		
+		$servername = "localhost";
+		$username = "pi";
+		$password = "raspberry";
+		$dbname = "ParkingDB";
+
+		// Create connection
+		$conn = new mysqli($servername, $username, $password, $dbname);
+		// Check connection
+		if ($conn->connect_error) {
+			die("Connection failed: " . $conn->connect_error);
+		}
+
+		$sql = "UPDATE ParkingLot SET bezet=1 WHERE id=5";
+
+		if ($conn->query($sql) === TRUE) {
+			echo "";
+		} 
+		else {
+			echo "";
+		}
 	}
+	
 	header("refresh: 3");
 	?>
 </body>
