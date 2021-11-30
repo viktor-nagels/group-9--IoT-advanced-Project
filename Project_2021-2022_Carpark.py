@@ -14,7 +14,7 @@ step3 = 19
 step4 = 26
 
 GPIO.setmode(GPIO.BCM)
-GPIO.setup(ultrasonic2,button, GPIO.IN)
+GPIO.setup((ultrasonic2,button), GPIO.IN)
 GPIO.setup((ultrasonic1,step1,step2,step3,step4), GPIO.OUT)
 
 
@@ -45,11 +45,13 @@ def stepdrive(pin1,pin2,pin3,pin4):
 
 def photo():
     camera = PiCamera() # TODO deze rotatie kan nog aangepast worden A.D.H.V. hoe de camera geposisioneert staat
-    #camera.rotation = 0
+    camera.rotation = 0
     camera.start_preview()
     sleep(2)
     camera.capture('/home/pi/images/photo.jpg')  # TODO make location for the pictures
     camera.stop_preview()
+    #camera.off()
+    camera.close()
 
 def numberplate():
     regions = ['mx', 'be'] # Change to your country
@@ -64,6 +66,8 @@ def numberplate():
         numberplate = "FALSE"
     else:
         numberplate = (json_results['results'][0]['plate'])
+        pprint ((json_results['results'][0]['plate']))
+        pprint (response.json())
     return numberplate
 
 def stepmotor():
@@ -99,10 +103,9 @@ while True:
         photo()
         sleep(5)
         numberplate()
-        numberplate = numberplate()
-        print(numberplate)
-        if numberplate != "FALSE":
-            print(numberplate)
+        plate = numberplate()
+        print(plate)
+        if plate != "FALSE":
             print("Car can access parking") 
             stepmotor()
 

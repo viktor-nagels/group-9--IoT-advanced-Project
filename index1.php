@@ -9,10 +9,10 @@
 <body>
     <?php
 
-	$hostname = "localhost";
-	$username = "pi";
-	$password = "raspberry";
-	$db = "IoT_Advanced_Project";
+	$hostname = "db.sinners.be";
+	$username = "viktornagels";
+	$password = "LV7ha6A2HyzR";
+	$db = "viktornagels_IoT_Advanced_Project";
 
 	$dbconnect=mysqli_connect($hostname,$username,$password,$db);
 
@@ -102,11 +102,10 @@
 		curl_exec($ch);
 		curl_close($ch);
 		
-		$hostname = "localhost";
-		$username = "pi";
-		$password = "raspberry";
-		$db = "IoT_Advanced_Project";
-
+		$hostname = "db.sinners.be";
+		$username = "viktornagels";
+		$password = "LV7ha6A2HyzR";
+		$db = "viktornagels_IoT_Advanced_Project";
 
 		// Create connection
 		$conn = new mysqli($servername, $username, $password, $dbname);
@@ -127,11 +126,10 @@
 	}	
 	if ($bezet['0'] == 0 or $bezet['1'] == 0 or $bezet['2'] == 0 or $bezet['3'] == 0 and $bezet[4] == 0){
 		
-		$hostname = "localhost";
-		$username = "pi";
-		$password = "raspberry";
-		$db = "IoT_Advanced_Project";
-
+		$hostname = "db.sinners.be";
+		$username = "viktornagels";
+		$password = "LV7ha6A2HyzR";
+		$db = "viktornagels_IoT_Advanced_Project";
 
 		// Create connection
 		$conn = new mysqli($servername, $username, $password, $dbname);
