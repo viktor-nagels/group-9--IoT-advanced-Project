@@ -27,7 +27,7 @@ LED_PIN_G3 = 16
 LED_PIN_R4 = 5
 LED_PIN_G4 = 6
 LED_PIN_R5 = 20
-light_intensety = 1000
+light_intensety = 950
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setup((ultrasonic2), GPIO.IN)
@@ -51,12 +51,12 @@ def updateDB(Status, ID):
     host="localhost",
     user="pi",
     password="raspberry",
-    database="IoT-Advanced-Project"
+    database="ParkingDB"
     )
 
     mycursor = mydb.cursor()
 
-    sql = "UPDATE parkingLots SET StatusParkingLot = %s WHERE ID = %s"
+    sql = "UPDATE ParkingLot SET bezet = %s WHERE ID = %s"
     val = (Status, ID)
 
     mycursor.execute(sql, val)
@@ -146,7 +146,7 @@ while True:
     buttonState = GPIO.input(button)
     distance = ultrasonic()
     print(distance)
-  
+
     if distance <= 30 :    #in centimeter
         photo()
         sleep(5)
@@ -155,11 +155,13 @@ while True:
         print(plate)
         if plate != "FALSE":
             print("Car can access parking") 
-            
+        
             stepmotor()
-
         else:
+            GPIO.output(LED_PIN_R5, 0)
             print("There was no numberplate found")
+            time.sleep(2)
+            GPIO.output(LED_PIN_R5, 1)
         
     else:
         print('GEEN auto aan de bareel')
@@ -222,7 +224,8 @@ while True:
         updateDB(0,2)   
     time.sleep(1)
 
-    if (lightsensor1 < 1000) and (lightsensor2 < 1000) and (lightsensor3 < 1000) and (lightsensor4 < 1000):
-        GPIO.output(LED_PIN_R5, 1)
-    else:
+    if ((lightsensor1 < 950) and (lightsensor2 < 950) and (lightsensor3 < 950) and (lightsensor4 < 950)):
         GPIO.output(LED_PIN_R5, 0)
+    else:
+        GPIO.output(LED_PIN_R5, 1)
+

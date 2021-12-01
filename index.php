@@ -1,26 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
-    <title>Parkinglots</title>
+    <title>Parking</title>
 </head>
-
 <body>
     <?php
-
 	$hostname = "localhost";
 	$username = "pi";
 	$password = "raspberry";
-	$db = "IoT_Advanced_Project";
-
+	$db = "ParkingDB";
 	$dbconnect=mysqli_connect($hostname,$username,$password,$db);
-
 	if ($dbconnect->connect_error) {
 		die("Database connection failed: " . $dbconnect->connect_error);
 	}
-
-	$query = mysqli_query($dbconnect, "SELECT StatusParkingLot FROM `parkingLots`")
+	$query = mysqli_query($dbconnect, "SELECT bezet FROM `ParkingLot`")
 		or die (mysqli_error($dbconnect));
 	while ($row = mysqli_fetch_array($query)) {
 		$bezet[] = $row[0];
@@ -82,11 +76,16 @@
 	<div> Aantal vrije plaatsen: <span style="font-weight:bold">
 	<?php
 	$counts = array_count_values($bezet);
-	echo  $counts['0'] 
+	
+    if($bezet['0'] == 1 and $bezet['1'] == 1 and $bezet['2'] == 1 and $bezet['3'] == 1){
+        echo '0';
+    }
+    else{
+        echo $counts['0'];
+    }
 	?></span>
 	</div>
 	<?php
-	
 	$counts = array_count_values($bezet);
 	if ($counts['0'] == 0){
 		curl_setopt_array($ch = curl_init(), array(
@@ -101,21 +100,20 @@
 		));
 		curl_exec($ch);
 		curl_close($ch);
-		
-		$hostname = "localhost";
+
+		$servername = "localhost";
 		$username = "pi";
 		$password = "raspberry";
-		$db = "IoT_Advanced_Project";
-
+		$dbname = "ParkingDB";
 
 		// Create connection
 		$conn = new mysqli($servername, $username, $password, $dbname);
 		// Check connection
 		if ($conn->connect_error) {
-			die("Connection failed test: " . $conn->connect_error);
+			die("Connection failed: " . $conn->connect_error);
 		}
 
-		$sql = "UPDATE parkingLots SET StatusParkingLot=0 WHERE ID=5";
+		$sql = "UPDATE ParkingLot SET bezet=0 WHERE id=5";
 
 		if ($conn->query($sql) === TRUE) {
 			echo "";
@@ -123,24 +121,22 @@
 		else {
 			echo "";
 		}
-		
 	}	
 	if ($bezet['0'] == 0 or $bezet['1'] == 0 or $bezet['2'] == 0 or $bezet['3'] == 0 and $bezet[4] == 0){
-		
-		$hostname = "localhost";
+
+		$servername = "localhost";
 		$username = "pi";
 		$password = "raspberry";
-		$db = "IoT_Advanced_Project";
-
+		$dbname = "ParkingDB";
 
 		// Create connection
 		$conn = new mysqli($servername, $username, $password, $dbname);
 		// Check connection
 		if ($conn->connect_error) {
-			die("Connection failed---: " . $conn->connect_error);
+			die("Connection failed: " . $conn->connect_error);
 		}
 
-		$sql = "UPDATE parkingLots SET StatusParkingLot=1 WHERE ID=5";
+		$sql = "UPDATE ParkingLot SET bezet=1 WHERE id=5";
 
 		if ($conn->query($sql) === TRUE) {
 			echo "";
@@ -148,10 +144,8 @@
 		else {
 			echo "";
 		}
-		
 	}
-	
+
 	header("refresh: 3");
 	?>
 </body>
-</html>
