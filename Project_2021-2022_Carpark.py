@@ -1,22 +1,69 @@
 from picamera import PiCamera
 from time import sleep
 import requests
-from pprint import pprint #? nakijken nog nodig
 import RPi.GPIO as GPIO
 import time
+import spidev
+import cgitb
+import mysql.connector
+import RPi.GPIO as GPIO
 
-ultrasonic1 = 20
-ultrasonic2 = 21
-button = 12
-step1 = 6
-step2 = 13
-step3 = 19
-step4 = 26
+cgitb.enable()
+
+ultrasonic1 = 17
+ultrasonic2 = 4
+button = 20
+step1 = 18
+step2 = 23
+step3 = 24
+step4 = 25
+pinstep = 18,23,24,25
+LED_PIN_R2 = 26
+LED_PIN_G2 = 12
+LED_PIN_R1 = 27
+LED_PIN_G1 = 22
+LED_PIN_R3 = 13
+LED_PIN_G3 = 16
+LED_PIN_R4 = 5
+LED_PIN_G4 = 6
+LED_PIN_R5 = 20
+light_intensety = 1000
 
 GPIO.setmode(GPIO.BCM)
-GPIO.setup((ultrasonic2,button), GPIO.IN)
-GPIO.setup((ultrasonic1,step1,step2,step3,step4), GPIO.OUT)
+GPIO.setup((ultrasonic2), GPIO.IN)
+GPIO.setup((ultrasonic1,step1,step2,step3,step4,LED_PIN_G1,LED_PIN_G2,LED_PIN_G3,LED_PIN_G4,LED_PIN_R1,LED_PIN_R2,LED_PIN_R3,LED_PIN_R4,LED_PIN_R5), GPIO.OUT)
+#GPIO.setup(button, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+GPIO.output((LED_PIN_G1, LED_PIN_G2, LED_PIN_G3, LED_PIN_G4, LED_PIN_R1, LED_PIN_R2, LED_PIN_R3, LED_PIN_R4, LED_PIN_R5), 1)
 
+spi = spidev.SpiDev()  # create spi object
+spi.open(0, 0)  # open spi port 0, device CS0 pin 24
+spi.max_speed_hz = (1000000)
+
+def readadc(adcnum):
+    if ((adcnum > 7) or (adcnum < 0)):
+        return -1
+    r = spi.xfer2([1, (8+adcnum) << 4, 0])
+    adcout = ((r[1] & 3) << 8) + r[2]
+    return adcout
+
+def updateDB(Status, ID):
+    mydb = mysql.connector.connect(
+    host="localhost",
+    user="pi",
+    password="raspberry",
+    database="IoT-Advanced-Project"
+    )
+
+    mycursor = mydb.cursor()
+
+    sql = "UPDATE parkingLots SET StatusParkingLot = %s WHERE ID = %s"
+    val = (Status, ID)
+
+    mycursor.execute(sql, val)
+
+    mydb.commit()
+
+    print(mycursor.rowcount, "record(s) affected")
 
 def stepdrive(pin1,pin2,pin3,pin4):  
     pinnumbers = pin1,pin2,pin3,pin4
@@ -44,11 +91,11 @@ def stepdrive(pin1,pin2,pin3,pin4):
     time.sleep(0.01)
 
 def photo():
-    camera = PiCamera() # TODO deze rotatie kan nog aangepast worden A.D.H.V. hoe de camera geposisioneert staat
-    camera.rotation = 0
+    camera = PiCamera() 
+    camera.rotation = -90
     camera.start_preview()
     sleep(2)
-    camera.capture('/home/pi/images/photo.jpg')  # TODO make location for the pictures
+    camera.capture('/home/pi/images/photo.jpg')  
     camera.stop_preview()
     #camera.off()
     camera.close()
@@ -66,8 +113,8 @@ def numberplate():
         numberplate = "FALSE"
     else:
         numberplate = (json_results['results'][0]['plate'])
-        pprint ((json_results['results'][0]['plate']))
-        pprint (response.json())
+        print((json_results['results'][0]['plate']))
+        
     return numberplate
 
 def stepmotor():
@@ -96,6 +143,7 @@ def ultrasonic():
     return distance
 
 while True:
+    buttonState = GPIO.input(button)
     distance = ultrasonic()
     print(distance)
   
@@ -107,30 +155,74 @@ while True:
         print(plate)
         if plate != "FALSE":
             print("Car can access parking") 
+            
             stepmotor()
 
         else:
             print("There was no numberplate found")
         
     else:
-        #! 111 - 114: Zijn deze verplicht?
-        GPIO.output(step1, 0)
-        GPIO.output(step2, 0)
-        GPIO.output(step3, 0)
-        GPIO.output(step4, 0)
         print('GEEN auto aan de bareel')
         time.sleep(0.5)
     
-    #? Code for exiting the parking 
-    if GPIO.input(button) == GPIO.HIGH:
-        print("Button was pushed!")
-        photo()
-        time.sleep(3)
-        numberplate()
-        if numberplate == "FALSE":
-            print("car can exit parking")
-            stepmotor()
-        else:
-            print("Someone is tryint to bypass the system!!!")
+    # #? Code for exiting the parking 
+    # if buttonState == False:
+    #     print("Button was pushed!")
+    #     photo()
+    #     time.sleep(3)
+    #     numberplate()
+    #     if numberplate == "FALSE":
+    #         print("car can exit parking")
+    #         stepmotor()
+    #     else:
+    #         print("Someone is tryint to bypass the system!!!")
 
-        
+    lightsensor1 = readadc(1)
+    lightsensor2 = readadc(0)
+    lightsensor3 = readadc(2)
+    lightsensor4 = readadc(3)
+    print(lightsensor1, lightsensor2, lightsensor3, lightsensor4)
+
+        #!Parking lot 1
+    if lightsensor1 > light_intensety:
+        GPIO.output(LED_PIN_R1, 0)
+        GPIO.output(LED_PIN_G1, 1)
+        updateDB(1,1)
+    else:
+        GPIO.output(LED_PIN_R1, 1)
+        GPIO.output(LED_PIN_G1, 0)
+        updateDB(0,1)
+    #!Parking lot 2
+    if lightsensor2 > light_intensety:
+        GPIO.output(LED_PIN_R2, 0)
+        GPIO.output(LED_PIN_G2, 1)
+        updateDB(1,4)
+    else:
+        GPIO.output(LED_PIN_R2, 1)
+        GPIO.output(LED_PIN_G2, 0)
+        updateDB(0,4)
+    #!Parking lot 3
+    if lightsensor3 > light_intensety:
+        GPIO.output(LED_PIN_R3, 0)
+        GPIO.output(LED_PIN_G3, 1)
+        updateDB(1,3)
+    else:
+        GPIO.output(LED_PIN_R3, 1)
+        GPIO.output(LED_PIN_G3, 0)
+        updateDB(0,3)
+
+    #!Parking lot 4
+    if lightsensor4 > light_intensety:
+        GPIO.output(LED_PIN_R4, 0)
+        GPIO.output(LED_PIN_G4, 1)
+        updateDB(1,2)
+    else:
+        GPIO.output(LED_PIN_R4, 1)
+        GPIO.output(LED_PIN_G4, 0)
+        updateDB(0,2)   
+    time.sleep(1)
+
+    if (lightsensor1 < 1000) and (lightsensor2 < 1000) and (lightsensor3 < 1000) and (lightsensor4 < 1000):
+        GPIO.output(LED_PIN_R5, 1)
+    else:
+        GPIO.output(LED_PIN_R5, 0)
