@@ -27,7 +27,8 @@ LED_PIN_G3 = 16
 LED_PIN_R4 = 5
 LED_PIN_G4 = 6
 LED_PIN_R5 = 20
-light_intensety = 950
+light_intensety = 970
+light_intensety1 = 970
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setup((ultrasonic2), GPIO.IN)
@@ -149,7 +150,6 @@ while True:
 
     if distance <= 30 :    #in centimeter
         photo()
-        sleep(5)
         numberplate()
         plate = numberplate()
         print(plate)
@@ -167,23 +167,32 @@ while True:
         print('GEEN auto aan de bareel')
         time.sleep(0.5)
     
-    # #? Code for exiting the parking 
-    # if buttonState == False:
-    #     print("Button was pushed!")
-    #     photo()
-    #     time.sleep(3)
-    #     numberplate()
-    #     if numberplate == "FALSE":
-    #         print("car can exit parking")
-    #         stepmotor()
-    #     else:
-    #         print("Someone is tryint to bypass the system!!!")
+
 
     lightsensor1 = readadc(1)
     lightsensor2 = readadc(0)
     lightsensor3 = readadc(2)
     lightsensor4 = readadc(3)
-    print(lightsensor1, lightsensor2, lightsensor3, lightsensor4)
+    lightsensor5 = readadc(4)
+    print(lightsensor1, lightsensor2, lightsensor3, lightsensor4, lightsensor5)
+
+        #? Code for exiting the parking 
+    if lightsensor5 > light_intensety1:
+        photo()
+        numberplate()
+        plate = numberplate()
+        print(plate)
+        if plate == "FALSE":
+            print("Car can exit parking")
+            print("There was no numberplate found")
+            
+        
+            stepmotor()
+        else:
+            print("there was a numberplate found")
+            GPIO.output(LED_PIN_R5, 0)
+            time.sleep(2)
+            GPIO.output(LED_PIN_R5, 1)
 
         #!Parking lot 1
     if lightsensor1 > light_intensety:
