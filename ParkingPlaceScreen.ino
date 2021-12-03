@@ -79,7 +79,7 @@ void drawParking()
   display.drawLine(0, 125, 125, 125, GxEPD_BLACK);
   // PLACE 3
   if (place3 == 1){
-    display.fillRect(0, 125, 125, 125, GxEPD_BLACK);
+    display.fillRect(0, 62, 125, 125, GxEPD_BLACK);
   }
   display.drawLine(0, 187, 125, 187, GxEPD_BLACK);
   // PLACE 4
